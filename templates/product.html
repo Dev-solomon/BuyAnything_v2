@@ -1,1 +1,71 @@
-{% extends 'base.html' %}{% block title %}{{p.name}} · buyanything{% endblock %}{% block body %}<section class="product-page"><div class="container"><div class="row g-5 align-items-start"><div class="col-lg-6"><div class="gallery-main"><img src="{{p.image or url_for('static',filename='img/placeholder.svg')}}" alt="{{p.name}}"></div>{% if p.images %}<div class="thumb-row">{% for im in p.images[:5] %}<button class="thumb" data-image="{{im}}"><img src="{{im}}"></button>{% endfor %}</div>{% endif %}</div><div class="col-lg-6 product-copy"><div class="eyebrow"><i></i> THE DETAILS</div><h1>{{p.name}}</h1><div class="product-reviews"><span class="review-stars">★★★★<span class="half-star">★</span></span><span class="review-count">4.5 · 800+ reviews</span></div><p class="lead">{{p.tagline}}</p><div class="price-line"><strong>${{'%.2f'|format(p.price)}}</strong>{% if p.compare_at %}<s>${{'%.2f'|format(p.compare_at)}}</s>{% endif %}</div><p>{{p.description}}</p><ul class="clean-list">{% for b in p.benefits %}<li>✓ {{b}}</li>{% endfor %}</ul>{% if p.variant_options %}<div class="variant-summary"><strong>Available options</strong>{% for opt in p.variant_options %}<div><span>{{opt.label}}</span><p>{{opt.values|join(' · ')}}</p></div>{% endfor %}</div>{% elif p.variants %}<p class="variant-note">Available in {{p.variants|length}} product option{{'s' if p.variants|length != 1 else ''}}. Choose your exact option at checkout.</p>{% endif %}<div class="delivery-card"><strong>Estimated delivery: 3–7 days</strong><span>Delivery times are estimates and may vary by destination, carrier, customs, or supplier processing.</span></div><a class="btn btn-brown btn-lg w-100" href="{{url_for('purchase',slug=store_slug)}}">Choose options & buy →</a></div></div></div></section>{% endblock %}
+{% extends 'base.html' %}{% block title %}{{p.name}} · buyanything{% endblock
+%}{% block body %}
+<section class="product-page">
+  <div class="container">
+    <div class="row g-5 align-items-start">
+      <div class="col-lg-6">
+        <div class="gallery-main">
+          <img
+            src="{{p.image or url_for('static',filename='img/placeholder.svg')}}"
+            alt="{{p.name}}"
+          />
+        </div>
+        {% if p.images %}
+        <div class="thumb-row">
+          {% for im in p.images[:5] %}<button class="thumb" data-image="{{im}}">
+            <img src="{{im}}" /></button
+          >{% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      <div class="col-lg-6 product-copy">
+        <div class="eyebrow"><i></i> THE DETAILS</div>
+        <h1>{{p.name}}</h1>
+        <div class="product-reviews">
+          <span class="review-stars">★★★★<span class="half-star">★</span></span
+          ><span class="review-count">4.5 · 800+ reviews</span>
+        </div>
+        <p class="lead">{{p.tagline}}</p>
+        <div class="price-line">
+          <strong>${{'%.2f'|format(p.price)}}</strong>  &nbsp;&nbsp; {% if p.compare_at
+          %}<s>${{'%.2f'|format(p.compare_at)}}</s>{% endif %}
+        </div>
+        <p>{{p.description}}</p>
+        <ul class="clean-list">
+          {% for b in p.benefits %}
+          <li>✓ {{b}}</li>
+          {% endfor %}
+        </ul>
+        {% if p.variant_options %}
+        <div class="variant-summary">
+          <strong>Available options</strong>{% for opt in p.variant_options %}
+          <div>
+            <span>{{opt.label}}</span>
+            <p>{{ opt['values'] | join(' · ') }}</p>
+          </div>
+          {% endfor %}
+        </div>
+        {% elif p.variants %}
+        <p class="variant-note">
+          Available in {{p.variants|length}} product option{{'s' if
+          p.variants|length != 1 else ''}}. Choose your exact option at
+          checkout.
+        </p>
+        {% endif %}
+        <div class="delivery-card">
+          <strong>Fast delivery: 3–7 days</strong
+          ><span
+            >our estimates may vary slightly by destination, carrier,
+            customs, or supplier processing.</span
+          >
+        </div>
+        <a
+          class="btn btn-brown btn-lg w-100"
+          href="{{url_for('purchase',slug=store_slug)}}"
+          >Buy Now & Choose Option →</a
+        >
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,17 +1,124 @@
-{% extends 'base.html' %}{% block title %}Checkout · buyanything{% endblock %}{% block body %}
-<section class="checkout-page"><div class="container narrow"><div class="checkout-card">
-<div class="eyebrow"><i></i> SECURE CHECKOUT</div><h1>Make it yours.</h1><p class="lead">Choose your exact product options and quantity, then continue to secure payment.</p>
-<div class="order-row"><img id="checkout-image" src="{{p.image or url_for('static',filename='img/placeholder.svg')}}"><div><b>{{p.name}}</b><p>{{p.tagline}}</p><small id="selected-variant-label">{% if p.variants %}Select your options below{% else %}Standard option{% endif %}</small><small id="qty-label">Qty {{quantity}}</small></div><strong id="line-total">${{'%.2f'|format(p.price * quantity)}}</strong></div>
-<form method="post" action="{{url_for('checkout',slug=store_slug)}}" id="checkout-form">
-{% if p.variants %}
-<input type="hidden" id="variant_vid" name="variant_vid" value="">
-<div class="option-picker" id="variant-picker" data-variants='{{p.variants|tojson}}'>
-{% if p.variant_options %}{% for opt in p.variant_options %}<fieldset class="option-group" data-option-label="{{opt.label}}"><legend>{{opt.label}}</legend><div class="option-values">{% for value in opt.values %}<button type="button" class="option-chip" data-option="{{opt.label}}" data-value="{{value}}">{{value}}</button>{% endfor %}</div></fieldset>{% endfor %}
-{% else %}<fieldset class="option-group"><legend>Product option</legend><div class="option-values">{% for v in p.variants %}<button type="button" class="option-chip direct-variant" data-vid="{{v.vid}}">{{v.name}}</button>{% endfor %}</div></fieldset>{% endif %}
-<div class="variant-feedback" id="variant-feedback">Choose an available combination.</div></div>
-{% endif %}
-<div class="quantity-row"><span>Quantity</span><div class="quantity-control"><button type="button" class="qty-btn" data-step="-1">−</button><input id="quantity" name="quantity" type="number" min="1" max="20" value="{{quantity}}" inputmode="numeric"><button type="button" class="qty-btn" data-step="1">+</button></div></div>
-<div class="total-row"><span>Total</span><b><span id="checkout-total">${{'%.2f'|format(p.price * quantity)}}</span> <small>USD</small></b></div>
-<button class="btn btn-brown btn-lg w-100" id="checkout-submit" {% if p.variants %}disabled{% endif %}>Continue to secure payment →</button></form>
-<div class="delivery-card compact"><strong>Estimated delivery: 3–7 days</strong><span>Tracking is provided when available after fulfillment.</span></div><div class="secure-note">◈ Your selected CJ variant and quantity are attached to the Stripe checkout and preserved for fulfillment. Payment and shipping details are collected securely by Stripe.</div>
-</div></div></section><script>window.BUYANYTHING_UNIT_PRICE={{p.price|tojson}};</script>{% endblock %}
+{% extends 'base.html' %}{% block title %}Checkout · buyanything{% endblock %}{%
+block body %}
+<section class="checkout-page">
+  <div class="container narrow">
+    <div class="checkout-card">
+      <div class="eyebrow"><i></i> SECURE CHECKOUT</div>
+      <h1>Make it yours.</h1>
+      <p class="lead">
+        Choose your exact product option and quantity, then continue to secure
+        payment.
+      </p>
+      <div class="order-row">
+        <img
+          id="checkout-image"
+          src="{{p.image or url_for('static',filename='img/placeholder.svg')}}"
+        />
+        <div>
+          <b>{{p.name}}</b>
+          <p>{{p.tagline}}</p>
+          <small id="selected-variant-label"
+            >{% if p.variants %}Select option below &darr; {% else %}Standard
+            option{% endif %}</small
+          ><small id="qty-label">Qty {{quantity}}</small>
+        </div>
+        <strong id="line-total">${{'%.2f'|format(p.price * quantity)}}</strong>
+      </div>
+      <form
+        method="post"
+        action="{{url_for('checkout',slug=store_slug)}}"
+        id="checkout-form"
+      >
+        {% if p.variants %}
+        <input type="hidden" id="variant_vid" name="variant_vid" value="" />
+        <div
+          class="option-picker"
+          id="variant-picker"
+          data-variants="{{p.variants|tojson}}"
+        >
+          {% if p.variant_options %}{% for opt in p.variant_options %}
+          <fieldset class="option-group" data-option-label="{{opt.label}}">
+            <legend>{{opt.label}}</legend>
+            <div class="option-values">
+              {% for value in opt['values'] %}<button
+                type="button"
+                class="option-chip"
+                data-option="{{opt.label}}"
+                data-value="{{value}}"
+              >
+                {{value}}</button
+              >{% endfor %}
+            </div>
+          </fieldset>
+          {% endfor %} {% else %}
+          <fieldset class="option-group">
+            <legend>Product option</legend>
+            <div class="option-values">
+              {% for v in p.variants %}<button
+                type="button"
+                class="option-chip direct-variant"
+                data-vid="{{v.vid}}"
+              >
+                {{v.name}}</button
+              >{% endfor %}
+            </div>
+          </fieldset>
+          {% endif %}
+          <div class="variant-feedback" id="variant-feedback">
+            Choose an available combination.
+          </div>
+        </div>
+        {% endif %}
+        <div class="quantity-row">
+          <span>Quantity</span>
+          <div class="quantity-control">
+            <button type="button" class="qty-btn" data-step="-1">−</button
+            ><input
+              id="quantity"
+              name="quantity"
+              type="number"
+              min="1"
+              max="20"
+              value="{{quantity}}"
+              inputmode="numeric"
+            /><button type="button" class="qty-btn" data-step="1">+</button>
+          </div>
+        </div>
+        <div class="total-row">
+          <span>Total</span
+          ><b
+            ><span id="checkout-total"
+              >${{'%.2f'|format(p.price * quantity)}}</span
+            >
+            <small>USD</small></b
+          >
+        </div>
+        <button
+          class="btn btn-brown btn-lg w-100"
+          id="checkout-submit"
+          {%
+          if
+          p.variants
+          %}disabled{%
+          endif
+          %}
+        >
+          Continue to secure payment →
+        </button>
+      </form>
+      <div class="delivery-card compact">
+        <strong>Fast delivery: 3–7 days</strong
+        ><span>Tracking is provided when available after fulfillment.</span>
+      </div>
+      <div class="secure-note">
+        ◈ Your selected variant and quantity are attached to the Stripe
+        checkout and preserved for fulfillment. Payment and shipping details are
+        collected securely by Stripe.
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+  window.BUYANYTHING_UNIT_PRICE={{p.price|tojson}};
+</script>
+{% endblock %}

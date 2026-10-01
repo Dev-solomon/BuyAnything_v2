@@ -16,7 +16,11 @@ from pymongo import MongoClient, DESCENDING
 from pymongo.errors import DuplicateKeyError
 from werkzeug.security import generate_password_hash, check_password_hash
 import stripe
-from services.research import research_trending_products, build_product
+from services.research import (
+    research_trending_products,
+    build_product,
+    find_cj_candidates
+)
 from services.cj import test_connection, create_order, CJError
 
 load_dotenv()
@@ -51,7 +55,7 @@ except Exception:
 
 DEFAULT_PRODUCT = {
     "name": "Your next remarkable find",
-    "tagline": "An affiliate-selected product will appear here.",
+    "tagline": "An approved-selected product will appear here.",
     "description": "This storefront is ready for a curated product.",
     "price": 49.99,
     "compare_at": 64.99,
@@ -157,11 +161,21 @@ def storefront(slug):
 @app.get("/s/<slug>/product")
 def product(slug):
     a = get_affiliate_by_slug(slug)
+
     if not a:
         return render_template("not_found.html"), 404
+
+    p = get_product_for_affiliate(a["_id"])
+
+    app.logger.debug(
+        "Product type: %s, value: %r",
+        type(p).__name__,
+        p
+    )
+
     return render_template(
         "product.html",
-        p=get_product_for_affiliate(a["_id"]),
+        p=p,
         affiliate=a,
         store_slug=slug,
     )
@@ -488,27 +502,192 @@ def affiliate_research():
     return redirect(url_for("affiliate_dashboard"))
 
 
+
 @app.post("/affiliate/approve/<int:i>")
 @affiliate_required
 def affiliate_approve(i):
+    """
+    Display actual CJ supplier matches for the
+    selected research opportunity.
+    Do not publish anything yet.
+    """
     a = current_affiliate()
     aid = str(a["_id"])
+
     latest = candidates.find_one(
-        {"affiliate_id": aid}, sort=[("created_at", DESCENDING)]
+        {"affiliate_id": aid},
+        sort=[("created_at", DESCENDING)]
     )
-    try:
-        item = latest["items"][i]
-        p = build_product(item)
-        p.update(
-            {"affiliate_id": aid, "affiliate_email": a["email"], "approved_at": now()}
-        )
-        products.replace_one({"affiliate_id": aid}, p, upsert=True)
+
+    if (
+        not latest
+        or not isinstance(latest.get("items"), list)
+        or not 0 <= i < len(latest["items"])
+    ):
         flash(
-            "Approved. Your private storefront, CJ variants and checkout are updated."
+            "Research selection expired. "
+            "Run research again."
         )
-    except Exception as e:
-        flash("Approval error: " + str(e))
-    return redirect(url_for("affiliate_dashboard"))
+        return redirect(url_for("affiliate_dashboard"))
+
+    item = latest["items"][i]
+
+    try:
+        matches = find_cj_candidates(item)
+
+        if not matches:
+            flash(
+                "CJ returned no supplier matches. "
+                "Try another research opportunity."
+            )
+            return redirect(url_for("affiliate_dashboard"))
+
+        # Bind approved supplier choices to this
+        # affiliate and research snapshot.
+        session["pending_cj_approval"] = {
+            "affiliate_id": aid,
+            "candidate_document_id": str(latest["_id"]),
+            "candidate_index": i,
+            "allowed_pids": [
+                x["pid"] for x in matches
+            ]
+        }
+
+        return render_template(
+            "select_cj_product.html",
+            candidate=item,
+            matches=matches
+        )
+
+    except Exception as exc:
+        app.logger.exception(
+            "CJ supplier search failed"
+        )
+        flash("Supplier search error: " + str(exc))
+
+        return redirect(
+            url_for("affiliate_dashboard")
+        )
+
+
+@app.post("/affiliate/confirm-cj")
+@affiliate_required
+def affiliate_confirm_cj():
+    """
+    Publish only the exact CJ product
+    selected from the displayed results.
+    """
+    from bson import ObjectId
+
+    a = current_affiliate()
+    aid = str(a["_id"])
+
+    pending = session.get(
+        "pending_cj_approval"
+    ) or {}
+
+    selected_pid = str(
+        request.form.get("cj_pid") or ""
+    ).strip()
+
+    # Reject products that were not presented
+    # during this affiliate's selection process.
+    if (
+        pending.get("affiliate_id") != aid
+        or not selected_pid
+        or selected_pid not in pending.get(
+            "allowed_pids", []
+        )
+    ):
+        flash(
+            "Supplier approval expired or invalid. "
+            "Select a CJ product again."
+        )
+        return redirect(
+            url_for("affiliate_dashboard")
+        )
+
+    try:
+        snapshot_id = ObjectId(
+            pending["candidate_document_id"]
+        )
+
+        snapshot = candidates.find_one({
+            "_id": snapshot_id,
+            "affiliate_id": aid
+        })
+
+        idx = pending["candidate_index"]
+
+        if (
+            not snapshot
+            or not isinstance(idx, int)
+            or not 0 <= idx < len(
+                snapshot.get("items", [])
+            )
+        ):
+            raise ValueError(
+                "The original research selection "
+                "is unavailable."
+            )
+
+        # Ensure another research run hasn't
+        # silently changed the selected product.
+        latest = candidates.find_one(
+            {"affiliate_id": aid},
+            sort=[("created_at", DESCENDING)]
+        )
+
+        if (
+            not latest
+            or latest["_id"] != snapshot_id
+        ):
+            raise ValueError(
+                "Research has changed. "
+                "Please select your product again."
+            )
+
+        item = snapshot["items"][idx]
+
+        # Source only the explicitly selected CJ ID.
+        product = build_product({
+            **item,
+            "approved_cj_pid": selected_pid
+        })
+
+        product.update({
+            "affiliate_id": aid,
+            "affiliate_email": a["email"],
+            "approved_at": now()
+        })
+
+        # Publish only after successful
+        # supplier verification and import.
+        products.replace_one(
+            {"affiliate_id": aid},
+            product,
+            upsert=True
+        )
+
+        session.pop(
+            "pending_cj_approval",
+            None
+        )
+
+        flash(
+            "Approved! Your exact selected product is now on your storefront."
+        )
+
+    except Exception as exc:
+        app.logger.exception(
+            "CJ supplier approval failed"
+        )
+        flash("Approval error: " + str(exc))
+
+    return redirect(
+        url_for("affiliate_dashboard")
+    )
+
 
 
 @app.post("/affiliate/test-cj")
@@ -516,7 +695,7 @@ def affiliate_approve(i):
 def affiliate_test_cj():
     try:
         test_connection()
-        flash("CJdropshipping API connection is working.")
+        flash("StoreFront connection is working.")
     except Exception as e:
         flash("CJ connection error: " + str(e))
     return redirect(url_for("affiliate_dashboard"))

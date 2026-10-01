@@ -1,0 +1,104 @@
+
+{% extends "base.html" %}
+
+{% block title %}
+Choose supplier product · BuyAnything
+{% endblock %}
+
+{% block body %}
+
+<section
+  class="container"
+  style="max-width:1000px;padding:40px 16px"
+>
+
+  <h1>Select the product that's similar</h1>
+
+  <p>
+    You researched:
+    <strong style="color: green; text-decoration: underline;">{{ candidate.name }}</strong>
+  </p>
+
+  <p>
+    Review each supplier result before publishing.
+    Only the product you approve will be imported.
+  </p>
+
+  <div
+    style="
+      display:grid;
+      grid-template-columns:
+        repeat(auto-fit,minmax(230px,1fr));
+      gap:18px;
+    "
+  >
+
+    {% for item in matches %}
+
+    <form
+      action="{{ url_for('affiliate_confirm_cj') }}"
+      method="post"
+      style="
+        border:1px solid #ddd;
+        border-radius:12px;
+        padding:16px;
+      "
+    >
+
+      {% if item.image %}
+
+      <img
+        src="{{ item.image }}"
+        alt="{{ item.name }}"
+        style="
+          width:100%;
+          height:210px;
+          object-fit:contain;
+        "
+      >
+
+      {% endif %}
+
+      <h2 style="font-size:1.1rem">
+        {{ item.name }}
+      </h2>
+
+      <p>
+        Supplier price:
+        {{ item.price if item.price is not none
+           else 'See suuplier' }}
+      </p>
+
+      <small>
+         -ID: {{ item.pid }}
+      </small>
+
+      <input
+        type="hidden"
+        name="cj_pid"
+        value="{{ item.pid }}"
+      >
+
+      <button
+        type="submit"
+        class="btn btn-brown"
+        style="display:block;margin-top:16px"
+      >
+        Approve this exact-product
+      </button>
+
+    </form>
+
+    {% endfor %}
+
+  </div>
+
+  <p style="margin-top:24px">
+    <a href="{{ url_for('affiliate_dashboard') }}">
+      Cancel without changing storefront
+    </a>
+  </p>
+
+</section>
+
+{% endblock %}

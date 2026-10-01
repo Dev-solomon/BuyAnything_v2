@@ -1,4 +1,161 @@
-{% extends 'base.html' %}{% block title %}Admin Dashboard · buyanything{% endblock %}{% block body %}<section class="dashboard-page"><div class="container"><div class="dash-head"><div><div class="eyebrow"><i></i> PLATFORM ADMIN</div><h1>BuyAnything overview.</h1><p>Affiliates, sales, fulfillment and platform earnings.</p></div><form method="post" action="/admin/logout"><button class="btn btn-outline-brown">Log out</button></form></div><div class="stats-grid"><div class="stat-card"><small>AFFILIATES</small><strong>{{affiliate_count}}</strong></div><div class="stat-card"><small>PAID ORDERS</small><strong>{{totals.orders or 0}}</strong></div><div class="stat-card"><small>GMV</small><strong>${{'%.2f'|format(totals.revenue or 0)}}</strong></div><div class="stat-card"><small>ADMIN 15% SHARE</small><strong>${{'%.2f'|format(totals.admin_profit or 0)}}</strong></div></div>
-<div class="dash-panel"><h2>Affiliates</h2><div class="table-responsive"><table class="dash-table"><thead><tr><th>Affiliate</th><th>Joined</th><th>Fulfillments</th><th>Sales</th><th>Affiliate earnings</th><th>Admin share</th><th>Store</th></tr></thead><tbody>{% for row in affiliates %}<tr><td><strong>{{row.affiliate.name}}</strong><small>{{row.affiliate.email}}</small></td><td>{{row.affiliate.created_at.strftime('%b %d, %Y') if row.affiliate.created_at else '—'}}</td><td>{{row.stats.fulfillments or 0}}</td><td>${{'%.2f'|format(row.stats.revenue or 0)}}</td><td>${{'%.2f'|format(row.stats.affiliate_profit or 0)}}</td><td>${{'%.2f'|format(row.stats.admin_profit or 0)}}</td><td><a target="_blank" href="{{url_for('storefront',slug=row.affiliate.slug)}}">Open ↗</a></td></tr>{% else %}<tr><td colspan="7" class="empty-cell">No affiliates yet.</td></tr>{% endfor %}</tbody></table></div></div>
-<div class="dash-panel"><h2>Top-selling products</h2><div class="table-responsive"><table class="dash-table"><thead><tr><th>Rank</th><th>Product</th><th>Units</th><th>Orders</th><th>Sales</th><th>Admin share</th></tr></thead><tbody>{% for p in top_products %}<tr><td>#{{loop.index}}</td><td><strong>{{p._id}}</strong></td><td>{{p.units}}</td><td>{{p.orders}}</td><td>${{'%.2f'|format(p.revenue or 0)}}</td><td>${{'%.2f'|format(p.admin_profit or 0)}}</td></tr>{% else %}<tr><td colspan="6" class="empty-cell">Sales rankings will appear here.</td></tr>{% endfor %}</tbody></table></div></div>
-<div class="dash-panel"><h2>Recent purchases</h2><div class="table-responsive"><table class="dash-table"><thead><tr><th>Date</th><th>Order</th><th>Affiliate</th><th>Product</th><th>Variant</th><th>Qty</th><th>Revenue</th><th>Affiliate profit</th><th>Admin share</th><th>CJ</th></tr></thead><tbody>{% for o in recent %}<tr><td>{{o.created_at.strftime('%b %d, %Y %H:%M') if o.created_at else '—'}}</td><td>{{o.order_number}}</td><td>{{o.affiliate_email}}</td><td>{{o.product}}</td><td>{{o.variant_name}}</td><td>{{o.quantity}}</td><td>${{'%.2f'|format(o.revenue or 0)}}</td><td>${{'%.2f'|format(o.affiliate_profit or 0)}}</td><td>${{'%.2f'|format(o.admin_profit or 0)}}</td><td><span class="status {{o.cj_status}}">{{o.cj_status}}</span></td></tr>{% else %}<tr><td colspan="10" class="empty-cell">No purchases yet.</td></tr>{% endfor %}</tbody></table></div></div></div></section>{% endblock %}
+{% extends 'base.html' %}{% block title %}Admin Dashboard · buyanything{%
+endblock %}{% block body %}
+<section class="dashboard-page">
+  <div class="container">
+    <div class="dash-head">
+      <div>
+        <div class="eyebrow"><i></i> PLATFORM ADMIN</div>
+        <h1>BuyAnything Overview.</h1>
+        <p>marketers, sales, fulfillments and platform earnings.</p>
+      </div>
+      <form method="post" action="/admin/logout">
+        <button class="btn btn-outline-brown">Log out</button>
+      </form>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <small>MARKETERS</small><strong>{{affiliate_count}}</strong>
+      </div>
+      <div class="stat-card">
+        <small>PAID ORDERS</small><strong>{{totals.orders or 0}}</strong>
+      </div>
+      <div class="stat-card">
+        <small>GMV</small
+        ><strong>${{'%.2f'|format(totals.revenue or 0)}}</strong>
+      </div>
+      <div class="stat-card">
+        <small>ADMIN 15% SHARE</small
+        ><strong>${{'%.2f'|format(totals.admin_profit or 0)}}</strong>
+      </div>
+    </div>
+    <div class="dash-panel">
+      <h2>Marketer(s)</h2>
+      <div class="table-responsive">
+        <table class="dash-table">
+          <thead>
+            <tr>
+              <th>Marketer</th>
+              <th>Joined</th>
+              <th>Fulfillments</th>
+              <th>Sales</th>
+              <th>Marketer earnings</th>
+              <th>Admin share</th>
+              <th>Store</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in affiliates %}
+            <tr>
+              <td>
+                <strong>{{row.affiliate.name}}</strong
+                ><small>{{row.affiliate.email}}</small>
+              </td>
+              <td>
+                {{row.affiliate.created_at.strftime('%b %d, %Y') if
+                row.affiliate.created_at else '—'}}
+              </td>
+              <td>{{row.stats.fulfillments or 0}}</td>
+              <td>${{'%.2f'|format(row.stats.revenue or 0)}}</td>
+              <td>${{'%.2f'|format(row.stats.affiliate_profit or 0)}}</td>
+              <td>${{'%.2f'|format(row.stats.admin_profit or 0)}}</td>
+              <td>
+                <a
+                  target="_blank"
+                  href="{{url_for('storefront',slug=row.affiliate.slug)}}"
+                  >Open ↗</a
+                >
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="7" class="empty-cell">No partners yet.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="dash-panel">
+      <h2>Top-selling products</h2>
+      <div class="table-responsive">
+        <table class="dash-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Product</th>
+              <th>Units</th>
+              <th>Orders</th>
+              <th>Sales</th>
+              <th>Admin share</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in top_products %}
+            <tr>
+              <td>#{{loop.index}}</td>
+              <td><strong>{{p._id}}</strong></td>
+              <td>{{p.units}}</td>
+              <td>{{p.orders}}</td>
+              <td>${{'%.2f'|format(p.revenue or 0)}}</td>
+              <td>${{'%.2f'|format(p.admin_profit or 0)}}</td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="6" class="empty-cell">
+                Sales rankings will appear here.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="dash-panel">
+      <h2>Recent purchases</h2>
+      <div class="table-responsive">
+        <table class="dash-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Order</th>
+              <th>Marketer</th>
+              <th>Product</th>
+              <th>Variant</th>
+              <th>Qty</th>
+              <th>Revenue</th>
+              <th>Marketer profit</th>
+              <th>Admin share</th>
+              <th>Supplier(CJ)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for o in recent %}
+            <tr>
+              <td>
+                {{o.created_at.strftime('%b %d, %Y %H:%M') if o.created_at else
+                '—'}}
+              </td>
+              <td>{{o.order_number}}</td>
+              <td>{{o.affiliate_email}}</td>
+              <td>{{o.product}}</td>
+              <td>{{o.variant_name}}</td>
+              <td>{{o.quantity}}</td>
+              <td>${{'%.2f'|format(o.revenue or 0)}}</td>
+              <td>${{'%.2f'|format(o.affiliate_profit or 0)}}</td>
+              <td>${{'%.2f'|format(o.admin_profit or 0)}}</td>
+              <td>
+                <span class="status {{o.cj_status}}">{{o.cj_status}}</span>
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="10" class="empty-cell">No purchases yet.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

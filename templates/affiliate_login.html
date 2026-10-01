@@ -1,1 +1,23 @@
-{% extends 'base.html' %}{% block title %}Affiliate Login · buyanything{% endblock %}{% block body %}<section class="auth-page"><div class="auth-card"><div class="eyebrow"><i></i> AFFILIATE ACCESS</div><h1>Welcome back.</h1><form method="post"><label>Email</label><input class="form-control" type="email" name="email" required><label>Password</label><input class="form-control" type="password" name="password" required><button class="btn btn-brown w-100 mt-3">Log in</button></form><p class="auth-foot">New here? <a href="/affiliate/signup">Create an affiliate account</a>.</p></div></section>{% endblock %}
+{% extends 'base.html' %}{% block title %}Affiliate Login · buyanything{%
+endblock %}{% block body %}
+<section class="auth-page">
+  <div class="auth-card">
+    <div class="eyebrow"><i></i> PARTNER ACCESS</div>
+    <h1>Welcome back!</h1>
+    <form method="post">
+      <label>Email</label
+      ><input class="form-control" type="email" name="email" required /><label
+        >Password</label
+      ><input
+        class="form-control"
+        type="password"
+        name="password"
+        required
+      /><button class="btn btn-brown w-100 mt-3">Log in</button>
+    </form>
+    <p class="auth-foot">
+      New here? <a href="/affiliate/signup" style="text-decoration: underline;">Create an affiliate account</a>.
+    </p>
+  </div>
+</section>
+{% endblock %}

@@ -1,1 +1,38 @@
-{% extends 'base.html' %}{% block title %}Affiliate Signup · buyanything{% endblock %}{% block body %}<section class="auth-page"><div class="auth-card"><div class="eyebrow"><i></i> JOIN BUYANYTHING</div><h1>Create your affiliate store.</h1><form method="post"><label>Full name</label><input class="form-control" name="name" required><label>Email</label><input class="form-control" type="email" name="email" required><label>Store name <small>(optional)</small></label><input class="form-control" name="store_name" placeholder="Defaults to your name"><label>Password</label><input class="form-control" type="password" name="password" minlength="8" required><label class="terms-check"><input type="checkbox" name="accept_terms" value="yes" required> <span>I have read and agree to the <a href="/affiliate/terms" target="_blank">BuyAnything Affiliate Terms</a>, including the 15% platform fee and payout calculation.</span></label><button class="btn btn-brown w-100 mt-3">Create account</button></form><p class="auth-foot">Already registered? <a href="/affiliate/login">Log in</a>.</p></div></section>{% endblock %}
+{% extends 'base.html' %}{% block title %}Affiliate Signup · buyanything{%
+endblock %}{% block body %}
+<section class="auth-page">
+  <div class="auth-card">
+    <div class="eyebrow"><i></i> JOIN BUYANYTHING</div>
+    <h1>Create your marketing store.</h1>
+    <form method="post">
+      <label>Full name</label
+      ><input class="form-control" name="name" required /><label>Email</label
+      ><input class="form-control" type="email" name="email" required /><label
+        >Store name <small>(optional)</small></label
+      ><input
+        class="form-control"
+        name="store_name"
+        placeholder="Defaults to your name"
+      /><label>Password</label
+      ><input
+        class="form-control"
+        type="password"
+        name="password"
+        minlength="8"
+        required
+      /><label class="terms-check"
+        ><input type="checkbox" name="accept_terms" value="yes" required />
+        <span
+          >I have read and agree to the
+          <a href="/affiliate/terms" target="_blank"
+            >BuyAnything Affiliate Terms</a
+          > and Policy.</span
+        ></label
+      ><button class="btn btn-brown w-100 mt-3">Create account</button>
+    </form>
+    <p class="auth-foot">
+      Already registered? <a href="/affiliate/login" style="text-decoration: underline;">Log in</a>.
+    </p>
+  </div>
+</section>
+{% endblock %}
