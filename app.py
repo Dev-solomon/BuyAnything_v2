@@ -826,6 +826,9 @@ def health():
         stripe_configured=bool(os.getenv("STRIPE_SECRET_KEY")),
     )
 
-
 if __name__ == "__main__":
-    app.run(debug=os.getenv("FLASK_DEBUG", "0") == "1")
+    app.run(
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 10000)),
+        debug=os.getenv("FLASK_DEBUG", "0") == "1"
+    )
