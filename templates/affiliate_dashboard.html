@@ -47,8 +47,7 @@ endblock %}{% block body %}
           <strong>{{p.name}}</strong>
           <p>{{p.tagline}}</p>
           {% if p.cj_pid %}<small
-            > PID {{p.cj_pid}} · {{p.variants|length}} variants · Supplier
-            cost from ${{'%.2f'|format(p.supplier_cost)}}</small
+            > PID {{p.cj_pid}} | {{p.variants|length}} variant(s) available </small
           >{% endif %}
         </div>
       </div>

@@ -276,8 +276,7 @@ def build_product(candidate):
 
     if not pid:
         raise ValueError(
-            "Select and approve an exact CJ product "
-            "before sourcing."
+            "Select and approve an exact product before sourcing."
         )
 
     # Retrieve the actual selected CJ product.
@@ -285,8 +284,7 @@ def build_product(candidate):
 
     if not isinstance(detail, dict):
         raise RuntimeError(
-            "CJ did not return product details "
-            "for the approved PID."
+            "Could not return product details for the approved PID."
         )
 
     actual_pid = str(
@@ -297,8 +295,7 @@ def build_product(candidate):
 
     if actual_pid != pid:
         raise RuntimeError(
-            "CJ returned a product different "
-            "from the approved PID."
+            "Supplier returned a product different from the approved PID."
         )
 
     best = {
@@ -322,8 +319,7 @@ def build_product(candidate):
 
     if not isinstance(vs, list) or not vs:
         raise RuntimeError(
-            "The approved CJ product has "
-            "no orderable variants."
+            "The approved supplier product has no orderable variants."
         )
 
     # Keep your existing code from:

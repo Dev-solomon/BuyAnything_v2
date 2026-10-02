@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
       variants = JSON.parse(picker.dataset.variants || '[]');
       if (!Array.isArray(variants)) variants = [];
     } catch (error) {
-      console.error('Invalid CJ variant data:', error);
+      console.error('Invalid SP variant data:', error);
     }
   }
 
@@ -120,13 +120,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const candidates = variants.filter(v => matches(v, selected));
 
-      const exact = complete && candidates.length === 1
+      // Multiple CJ IDs can share display attributes; select a real
+      // matching ID rather than leaving a valid combination unselectable.
+      const exact = complete && candidates.length
         ? candidates[0]
         : null;
 
       setVariant(exact);
 
-      if (!exact && complete && feedback) {
+      if (!exact && complete && feedback) { 
         feedback.textContent =
           'That combination is unavailable. Choose another option.';
       }
@@ -135,10 +137,9 @@ document.addEventListener('DOMContentLoaded', () => {
       picker.querySelectorAll(
         '.option-chip:not(.direct-variant)'
       ).forEach(btn => {
-        const test = {
-          ...selected,
-          [btn.dataset.option]: btn.dataset.value
-        };
+        // Ignore the old choice in this same group when switching values.
+        const test = { ...selected };
+        test[btn.dataset.option] = btn.dataset.value;
 
         const possible = variants.some(v => matches(v, test));
 
@@ -153,6 +154,17 @@ document.addEventListener('DOMContentLoaded', () => {
     ).forEach(btn => {
       btn.addEventListener('click', () => {
         selected[btn.dataset.option] = btn.dataset.value;
+        // If the new value conflicts with a previously chosen other group,
+        // clear conflicting choices so the shopper can choose a valid pair.
+        for (const key of Object.keys(selected)) {
+          if (key !== btn.dataset.option &&
+              !variants.some(v => matches(v, selected))) {
+            delete selected[key];
+            picker.querySelectorAll('.option-chip:not(.direct-variant)').forEach(other => {
+              if (other.dataset.option === key) other.classList.remove('selected');
+            });
+          }
+        }
 
         picker.querySelectorAll(
           '.option-chip:not(.direct-variant)'

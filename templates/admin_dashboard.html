@@ -136,8 +136,14 @@ endblock %}{% block body %}
                 '—'}}
               </td>
               <td>{{o.order_number}}</td>
-              <td>{{o.affiliate_email}}</td>
-              <td>{{o.product}}</td>
+              <td title="{{ o.affiliate_email }}">
+                {{ o.affiliate_email | replace('@gmail.com', '@gmail.com') | truncate(10,
+                True, '...') }}
+              </td>
+
+              <td title="{{ o.product }}">
+                {{ o.product | truncate(10, True, '...') }}
+              </td>
               <td>{{o.variant_name}}</td>
               <td>{{o.quantity}}</td>
               <td>${{'%.2f'|format(o.revenue or 0)}}</td>

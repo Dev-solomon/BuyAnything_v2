@@ -1,8 +1,8 @@
 {
   "name":"The Everyday Essential",
-  "tagline":"Connect CJdropshipping in .env, research a product, approve it, and this storefront updates automatically.",
-  "description":"This is the launch placeholder. From the admin control room, run recent product research and approve a candidate. buyanything will search CJdropshipping, import a matching supplier product and fulfillment identifiers, create polished storefront copy, and make it ready for Stripe checkout.",
+  "tagline":"Check Status Connection, research a product, approve it, and this storefront updates automatically.",
+  "description":"This is the launch placeholder. From your dashboard, run a recent research and approve one product. BuyAnything will import matching supplier products and everything is added automatically.",
   "price":29.99,"compare_at":39.99,"currency":"usd","image":"","images":[],
-  "benefits":["One focused product story","Secure Stripe checkout","CJdropshipping fulfillment workflow"],
-  "supplier":"CJdropshipping","cj_pid":"","cj_vid":"","cj_sku":"","cj_variant_sku":""
+  "benefits":["One focused product story","Secured Stripe checkout","Automated fulfillment workflow"],
+  "supplier":"Supplier","cj_pid":"","cj_vid":"","cj_sku":"","cj_variant_sku":""
 }

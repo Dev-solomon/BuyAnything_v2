@@ -191,8 +191,21 @@ def purchase(slug):
         quantity = max(1, min(int(request.args.get("quantity", "1")), 20))
     except Exception:
         quantity = 1
+    # Derive display options from the saved CJ variants, including older
+    # approved products that have no stored variant_options schema.
+    display_options = []
+    variants_for_picker = p.get("variants") or []
+    if variants_for_picker:
+        attrs = [v.get("attributes") or {} for v in variants_for_picker]
+        labels = list(attrs[0]) if attrs else []
+        # Mixed/missing attribute schemas cannot safely form combined selectors.
+        if labels and all(set(x) == set(labels) and all(str(x[k]).strip() for k in labels) for x in attrs):
+            for label in labels:
+                values = list(dict.fromkeys(str(x[label]) for x in attrs))
+                display_options.append({"label": label, "values": values})
     return render_template(
-        "purchase.html", p=p, affiliate=a, store_slug=slug, quantity=quantity
+        "purchase.html", p=p, affiliate=a, store_slug=slug,
+        quantity=quantity, display_options=display_options
     )
 
 
@@ -220,18 +233,27 @@ def checkout(slug):
     else:
         selected_vid = p.get("cj_vid")
     if not selected_vid:
-        flash("This product is not connected to CJdropshipping yet.")
+        flash("This product is not connected online Yet!.")
         return redirect(url_for("purchase", slug=slug))
     unit_price = float((variant or {}).get("retail_price") or p["price"])
     base = os.getenv("BASE_URL", request.host_url.rstrip("/")).rstrip("/")
     order_no = "BA-" + uuid.uuid4().hex[:10].upper()
     s = stripe.checkout.Session.create(
         mode="payment",
+         managed_payments={"enabled": False},
         payment_method_types=["card"],
         billing_address_collection="auto",
         shipping_address_collection={
-            "allowed_countries": ["US", "CA", "GB", "AU", "NZ"]
-        },
+    "allowed_countries": [
+        "US", "CA", "GB", "AU", "NZ",
+        "DE", "FR", "IT", "ES", "NL",
+        "BE", "AT", "CH", "SE", "NO",
+        "DK", "FI", "IE", "PT", "PL",
+        "JP", "SG", "HK", "AE", "SA",
+        "MX", "BR", "ZA", "NG", "KE",
+        "GH", "IN", "MY", "PH", "TH"
+    ]
+},
         phone_number_collection={"enabled": True},
         customer_creation="always",
         metadata={
@@ -385,6 +407,7 @@ def policies():
 
 
 @app.get("/affiliate/terms")
+@affiliate_required
 def affiliate_terms():
     return render_template("affiliate_terms.html")
 
@@ -537,8 +560,7 @@ def affiliate_approve(i):
 
         if not matches:
             flash(
-                "CJ returned no supplier matches. "
-                "Try another research opportunity."
+                "Supplier returned no similar matches - Try another research opportunity."
             )
             return redirect(url_for("affiliate_dashboard"))
 
@@ -561,7 +583,7 @@ def affiliate_approve(i):
 
     except Exception as exc:
         app.logger.exception(
-            "CJ supplier search failed"
+            "Supplier search failed"
         )
         flash("Supplier search error: " + str(exc))
 
@@ -600,8 +622,7 @@ def affiliate_confirm_cj():
         )
     ):
         flash(
-            "Supplier approval expired or invalid. "
-            "Select a CJ product again."
+            "Supplier approval expired or invalid. Try Again!"
         )
         return redirect(
             url_for("affiliate_dashboard")
@@ -680,7 +701,7 @@ def affiliate_confirm_cj():
 
     except Exception as exc:
         app.logger.exception(
-            "CJ supplier approval failed"
+            "Supplier approval failed"
         )
         flash("Approval error: " + str(exc))
 
@@ -697,7 +718,7 @@ def affiliate_test_cj():
         test_connection()
         flash("StoreFront connection is working.")
     except Exception as e:
-        flash("CJ connection error: " + str(e))
+        flash("Connection Error: " + str(e))
     return redirect(url_for("affiliate_dashboard"))
 
 
