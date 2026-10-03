@@ -1,0 +1,154 @@
+{% extends 'base.html' %} {% block title %}Sell Products Online With Your Own
+Storefront | BuyAnything{% endblock %} {% block body %}
+<style>
+  .seo-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 64px 20px 80px;
+    color: #2b1b14;
+  }
+  .seo-page h1,
+  .seo-page h2 {
+    font-family: Georgia, "Times New Roman", serif;
+  }
+  .seo-page h1 {
+    font-size: clamp(2.4rem, 6vw, 4.7rem);
+    line-height: 1.02;
+    max-width: 900px;
+  }
+  .seo-page h2 {
+    margin-top: 52px;
+    font-size: 2rem;
+  }
+  .seo-page p,
+  .seo-page li {
+    font-size: 1.05rem;
+    line-height: 1.75;
+  }
+  .seo-kicker {
+    font-size: 0.78rem !important;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #805536;
+  }
+  .seo-lead {
+    font-size: 1.25rem !important;
+    max-width: 780px;
+  }
+  .seo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin: 28px 0;
+  }
+  .seo-card {
+    border: 1px solid #dbcdbf;
+    border-radius: 16px;
+    padding: 24px;
+    background: #fff;
+  }
+  .seo-cta {
+    display: inline-block;
+    margin-top: 18px;
+    padding: 14px 22px;
+    border-radius: 10px;
+    background: #3b2418;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+  }
+  .seo-note {
+    background: #f7f1eb;
+    border-radius: 16px;
+    padding: 22px;
+    margin-top: 34px;
+  }
+  @media (max-width: 800px) {
+    .seo-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+<article class="seo-page">
+  <p class="seo-kicker">BuyAnything Marketers Network</p>
+  <h1>Choose a product. Get a storefront. Start marketing.</h1>
+  <p class="seo-lead">
+    BuyAnything gives marketers a simpler path from product research to a live
+    selling page. Research products showing demand, choose the one you want to
+    market, let BuyAnything connect the supplier and storefront, then focus on
+    reaching buyers.
+  </p>
+  <a class="seo-cta" href="/affiliate/signup">Create your marketer account →</a>
+
+  <h2>What BuyAnything is built to remove</h2>
+  <div class="seo-grid">
+    <section class="seo-card">
+      <h3>Product hunting</h3>
+      <p>
+        Use the platform's research workflow to compare products instead of
+        starting every campaign with a blank page.
+      </p>
+    </section>
+    <section class="seo-card">
+      <h3>Store setup</h3>
+      <p>
+        Approved products can be connected to a focused BuyAnything storefront
+        so you can spend more time marketing.
+      </p>
+    </section>
+    <section class="seo-card">
+      <h3>Fulfillment work</h3>
+      <p>
+        Orders are designed to flow through secure checkout and the connected
+        supplier workflow rather than requiring the marketer to pack products.
+      </p>
+    </section>
+  </div>
+
+  <h2>How marketers use BuyAnything</h2>
+  <ol>
+    <li>
+      <strong>Create an account.</strong> Register as a BuyAnything marketer.
+    </li>
+    <li>
+      <strong>Research products.</strong> Review product opportunities and
+      demand signals available in the platform.
+    </li>
+    <li>
+      <strong>Choose a product.</strong> Approve the product you want to
+      promote.
+    </li>
+    <li>
+      <strong>Use your storefront.</strong> Share your BuyAnything storefront
+      through social media, content, paid advertising, or direct outreach.
+    </li>
+    <li>
+      <strong>Track sales.</strong> Follow qualifying orders and earnings from
+      your marketer dashboard.
+    </li>
+  </ol>
+
+  <h2>Who is it for?</h2>
+  <p>
+    BuyAnything is designed for people who want to market physical products
+    online: social-media marketers, creators, performance marketers, ecommerce
+    beginners, and experienced sellers who want a focused product page without
+    building a full catalog store first.
+  </p>
+
+  <div class="seo-note">
+    <strong>Important:</strong> BuyAnything provides selling infrastructure and
+    marketing tools, but it does not guarantee income or sales. Results depend
+    on product selection, audience, creative quality, marketing execution, ad
+    costs, and buyer demand.
+  </div>
+
+  <h2>Ready to choose what you want to sell?</h2>
+  <p>
+    Create your account, explore available product research, and build your
+    first BuyAnything storefront.
+  </p>
+  <a class="seo-cta" href="/affiliate/signup">Join BuyAnything →</a>
+</article>
+{% endblock %}

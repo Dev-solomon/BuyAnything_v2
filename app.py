@@ -22,9 +22,11 @@ from services.research import (
     find_cj_candidates
 )
 from services.cj import test_connection, create_order, CJError
+from seo_addon import init_seo
 
 load_dotenv()
 app = Flask(__name__)
+init_seo(app)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "dev-change-me")
 app.config.update(
     SESSION_COOKIE_HTTPONLY=True,
